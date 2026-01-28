@@ -2,6 +2,7 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter, Geist_Mono } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import Script from "next/script"
 import { AuthProvider } from "@/lib/auth-context"
 import { ThemeProvider } from "@/lib/theme-context"
 import "./globals.css"
@@ -11,7 +12,8 @@ const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "TechStore - Your One-Stop Tech Shop",
-  description: "Discover premium tech products at great prices. Wireless headphones, smartwatches, keyboards and more.",
+  description:
+    "Discover premium tech products at great prices. Wireless headphones, smartwatches, keyboards and more.",
   generator: "v0.app",
   icons: {
     icon: [
@@ -32,14 +34,32 @@ export const metadata: Metadata = {
   },
 }
 
+const GA_ID = "G-JDXMK0X6YS"
+
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`font-sans antialiased`}>
+      <body className="font-sans antialiased">
+        {/* Google Analytics */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_ID}', {
+              page_path: window.location.pathname,
+            });
+          `}
+        </Script>
+
         <ThemeProvider>
           <AuthProvider>
             {children}
@@ -50,12 +70,3 @@ export default function RootLayout({
     </html>
   )
 }
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-JDXMK0X6YS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-JDXMK0X6YS');
-</script>
